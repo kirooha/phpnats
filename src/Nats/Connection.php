@@ -447,8 +447,14 @@ class Connection
         $this->setStreamTimeout($timeout);
 
         $msg = 'CONNECT '.$this->options;
-        $this->send($msg);
         $connectResponse = $this->receive();
+
+        $cryptoRes = stream_socket_enable_crypto($this->streamSocket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT);
+        if (!$cryptoRes) {
+            throw new \Exception('Failed setting crypto connection');
+        }
+
+        $this->send($msg);
 
         if ($this->isErrorResponse($connectResponse) === true) {
             throw Exception::forFailedConnection($connectResponse);
