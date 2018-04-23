@@ -22,6 +22,8 @@ class Connection
     private $debug = false;
 
 
+    private $streamContext;
+
     /**
      * Enable or disable debug mode.
      *
@@ -242,7 +244,9 @@ class Connection
                 return true;
             }
         );
-        $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
+
+        $this->streamContext = stream_context_create();
+        $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $this->streamContext);
         restore_error_handler();
 
         if ($fp === false) {
@@ -447,8 +451,17 @@ class Connection
         $this->setStreamTimeout($timeout);
 
         $msg = 'CONNECT '.$this->options;
-        $this->send($msg);
         $connectResponse = $this->receive();
+
+        stream_context_set_option($this->streamContext, 'ssl', 'local_cert', $this->options->getClientCrt());
+        stream_context_set_option($this->streamContext, 'ssl', 'local_pk', $this->options->getClientKey());
+
+        $cryptoRes = stream_socket_enable_crypto($this->streamSocket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT);
+        if (!$cryptoRes) {
+            throw new \Exception('Failed setting crypto connection');
+        }
+
+        $this->send($msg);
 
         if ($this->isErrorResponse($connectResponse) === true) {
             throw Exception::forFailedConnection($connectResponse);

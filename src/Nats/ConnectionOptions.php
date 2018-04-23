@@ -82,22 +82,34 @@ class ConnectionOptions
     private $reconnect = true;
 
     /**
+     * @var string
+     */
+    private $clientCrt = 'client.crt';
+
+    /**
+     * @var string
+     */
+    private $clientKey = 'client.key';
+
+    /**
      * Allows to define parameters which can be set by passing them to the class constructor.
      *
      * @var array
      */
     private $configurable = [
-                             'host',
-                             'port',
-                             'user',
-                             'pass',
-                             'token',
-                             'lang',
-                             'version',
-                             'verbose',
-                             'pedantic',
-                             'reconnect',
-                            ];
+        'host',
+        'port',
+        'user',
+        'pass',
+        'token',
+        'lang',
+        'version',
+        'verbose',
+        'pedantic',
+        'reconnect',
+        'clientCrt',
+        'clientKey',
+    ];
 
 
     /**
@@ -144,11 +156,11 @@ class ConnectionOptions
     public function __toString()
     {
         $a = [
-              'lang'     => $this->lang,
-              'version'  => $this->version,
-              'verbose'  => $this->verbose,
-              'pedantic' => $this->pedantic,
-             ];
+            'lang'     => $this->lang,
+            'version'  => $this->version,
+            'verbose'  => $this->verbose,
+            'pedantic' => $this->pedantic,
+        ];
         if (empty($this->user) === false) {
             $a['user'] = $this->user;
         }
@@ -418,6 +430,30 @@ class ConnectionOptions
         $this->reconnect = $reconnect;
 
         return $this;
+    }
+
+    public function setClientCrt($clientCrt)
+    {
+        $this->clientCrt = $clientCrt;
+
+        return $this;
+    }
+
+    public function getClientCrt()
+    {
+        return $this->clientCrt;
+    }
+
+    public function setClientKey($clientKey)
+    {
+        $this->clientKey = $clientKey;
+
+        return $this;
+    }
+
+    public function getClientKey()
+    {
+        return $this->clientKey;
     }
 
     /**
