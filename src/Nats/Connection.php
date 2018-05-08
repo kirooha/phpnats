@@ -453,12 +453,13 @@ class Connection
         $msg = 'CONNECT '.$this->options;
         $connectResponse = $this->receive();
 
-        stream_context_set_option($this->streamContext, 'ssl', 'local_cert', $this->options->getClientCrt());
-        stream_context_set_option($this->streamContext, 'ssl', 'local_pk', $this->options->getClientKey());
-
-        $cryptoRes = stream_socket_enable_crypto($this->streamSocket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT);
-        if (!$cryptoRes) {
-            throw new \Exception('Failed setting crypto connection');
+        if ($this->options->getClientCrt() && $this->options->getClientKey()) {
+            stream_context_set_option($this->streamContext, 'ssl', 'local_cert', $this->options->getClientCrt());
+            stream_context_set_option($this->streamContext, 'ssl', 'local_pk', $this->options->getClientKey());
+            $cryptoRes = stream_socket_enable_crypto($this->streamSocket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT);
+            if (!$cryptoRes) {
+                throw new \Exception('Failed setting crypto connection');
+            }
         }
 
         $this->send($msg);

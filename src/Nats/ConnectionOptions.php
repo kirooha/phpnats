@@ -84,12 +84,12 @@ class ConnectionOptions
     /**
      * @var string
      */
-    private $clientCrt = 'client.crt';
+    private $clientCrt = '';
 
     /**
      * @var string
      */
-    private $clientKey = 'client.key';
+    private $clientKey = '';
 
     /**
      * Allows to define parameters which can be set by passing them to the class constructor.
